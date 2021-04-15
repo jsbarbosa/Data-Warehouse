@@ -1,11 +1,12 @@
 import configparser
 
 import psycopg2
+from psycopg2.extras import DictCursor, DictConnection
 
 from sql_queries import CREATE_TABLE_QUERIES, DROP_TABLES, DROP_TABLE_FORMAT
 
 
-def drop_tables(cur, conn):
+def drop_tables(cur: DictCursor, conn: DictConnection):
     """
     Function that drops all tables from `DROP_TABLES` by using the
     `DROP_TABLE_FORMAT` string format
@@ -24,7 +25,7 @@ def drop_tables(cur, conn):
         conn.commit()
 
 
-def create_tables(cur, conn):
+def create_tables(cur: DictCursor, conn: DictConnection):
     """
     Function that creates all tables from `CREATE_TABLE_QUERIES`
 

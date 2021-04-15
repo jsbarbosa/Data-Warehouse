@@ -1,9 +1,10 @@
 import configparser
 import psycopg2
+from psycopg2.extras import DictCursor, DictConnection
 from sql_queries import COPY_TABLE_QUERIES, INSERT_TABLE_QUERIES
 
 
-def load_staging_tables(cur, conn):
+def load_staging_tables(cur: DictCursor, conn: DictConnection):
     """
     Function that loads all data from the source S3 bucket into the staging
     Redshift tables by using the `COPY_TABLE_QUERIES` variable
@@ -18,7 +19,7 @@ def load_staging_tables(cur, conn):
         conn.commit()
 
 
-def insert_tables(cur, conn):
+def insert_tables(cur: DictCursor, conn: DictConnection):
     """
     Function that inserts data from the staging Redshift tables into the
     Redshift analytical tables by using the `INSERT_TABLE_QUERIES` variable
