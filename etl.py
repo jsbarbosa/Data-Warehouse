@@ -35,6 +35,12 @@ def insert_tables(cur: DictCursor, conn: DictConnection):
 
 
 def main():
+    """
+    Function that loads configuration values from `dwh.cfg`, creates a
+    connection to Redshift, loads data from S3 into the Redshift staging tables,
+    after staging data is loded, analytical tables are filled with insertions
+    from the staging tables.
+    """
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 

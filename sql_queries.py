@@ -6,9 +6,8 @@ config.read('dwh.cfg')
 
 IAM_ROLE__ARN: str = config.get('IAM_ROLE', 'ARN')
 S3__LOG_DATA: str = config.get('S3', 'LOG_DATA')
-S3__LOG_JSON_PATH: str = config.get('S3', 'LOG_JSONPATH')
+S3__LOG_JSON_PATH: str = config.get('S3', 'LOG_JSON_PATH')
 S3__SONG_DATA: str = config.get('S3', 'SONG_DATA')
-S3__SONGS_JSONPATH: str = config.get('S3', 'SONGS_JSONPATH')
 
 """
 SQL STATEMENTS
@@ -57,9 +56,9 @@ CREATE TABLE IF NOT EXISTS {STAGING_SONGS_TABLE}(
     artist_id VARCHAR NOT NULL DISTKEY SORTKEY,
     artist_latitude VARCHAR  NULL,
     artist_longitude VARCHAR NULL,
-    artist_location VARCHAR NULL,
-    artist_name VARCHAR NULL,
-    title VARCHAR(500) NULL,
+    artist_location VARCHAR(1000) NULL,
+    artist_name VARCHAR(1000) NULL,
+    title VARCHAR(1000) NULL,
     duration FLOAT NULL,
     year INTEGER NULL
 );
@@ -92,7 +91,7 @@ CREATE TABLE IF NOT EXISTS {USER_TABLE}(
 SONG_TABLE_CREATE: str = f"""
 CREATE TABLE IF NOT EXISTS {SONG_TABLE}(
     song_id VARCHAR NOT NULL SORTKEY,
-    title VARCHAR,
+    title VARCHAR(1000),
     artist_id VARCHAR,
     year INT,
     duration FLOAT
@@ -102,8 +101,8 @@ CREATE TABLE IF NOT EXISTS {SONG_TABLE}(
 ARTIST_TABLE_CREATE: str = f"""
 CREATE TABLE IF NOT EXISTS {ARTIST_TABLE}(
     artist_id VARCHAR NOT NULL SORTKEY,
-    name VARCHAR, 
-    location VARCHAR, 
+    name VARCHAR(1000), 
+    location VARCHAR(1000), 
     latitude FLOAT, 
     longitude FLOAT
 ) diststyle all;
@@ -127,7 +126,6 @@ STAGING_EVENTS_COPY_STATEMENT: str = f"""
     COPY {STAGING_EVENTS_TABLE} FROM {S3__LOG_DATA}
     credentials 'aws_iam_role={IAM_ROLE__ARN}'
     format as json {S3__LOG_JSON_PATH}
-    STATUPDATE ON
     region 'us-west-2';
 """
 
@@ -135,8 +133,6 @@ STAGING_SONGS_COPY_STATEMENT: str = f"""
     COPY {STAGING_SONGS_TABLE} FROM {S3__SONG_DATA}
     credentials 'aws_iam_role={IAM_ROLE__ARN}'
     format as json 'auto'
-    ACCEPTINVCHARS AS '^'
-    STATUPDATE ON
     region 'us-west-2';
 """
 

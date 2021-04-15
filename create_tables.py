@@ -40,6 +40,12 @@ def create_tables(cur: DictCursor, conn: DictConnection):
 
 
 def main():
+    """
+    Function that loads configuration values from `dwh.cfg`, creates a
+    connection to Redshift, drops the project tables and then creates them.
+    Project tables are listed in sql_queries under `DROP_TABLES` and
+    `CREATE_TABLE_QUERIES`.
+    """
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
