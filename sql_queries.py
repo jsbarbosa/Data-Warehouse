@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS {STAGING_SONGS_TABLE}(
     song_id VARCHAR NOT NULL,
     num_songs INTEGER NULL,
     artist_id VARCHAR NOT NULL DISTKEY SORTKEY,
-    artist_latitude VARCHAR  NULL,
+    artist_latitude VARCHAR NULL,
     artist_longitude VARCHAR NULL,
     artist_location VARCHAR(1000) NULL,
     artist_name VARCHAR(1000) NULL,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS {SONG_TABLE}(
     artist_id VARCHAR,
     year INT,
     duration FLOAT
-) diststyle all;
+)
 """
 
 ARTIST_TABLE_CREATE: str = f"""
@@ -137,7 +137,6 @@ STAGING_SONGS_COPY_STATEMENT: str = f"""
 """
 
 # FINAL TABLES
-
 """
 Fact table records in event data associated with song plays i.e.
 records with page `NextSong`
@@ -155,18 +154,18 @@ INSERT INTO {SONGPLAY_TABLE} (
 )
 SELECT 
     TIMESTAMP 'epoch' + {STAGING_EVENTS_TABLE}.ts / 1000 * INTERVAL '1 second' AS start_time,
-    {STAGING_EVENTS_TABLE}.user_id,
+    {STAGING_EVENTS_TABLE}.userId,
     {STAGING_EVENTS_TABLE}.level,
     {STAGING_SONGS_TABLE}.song_id,
     {STAGING_SONGS_TABLE}.artist_id,
-    {STAGING_EVENTS_TABLE}.session_id,
+    {STAGING_EVENTS_TABLE}.sessionId,
     {STAGING_EVENTS_TABLE}.location,
-    {STAGING_EVENTS_TABLE}.user_agent
+    {STAGING_EVENTS_TABLE}.userAgent
 FROM 
     {STAGING_EVENTS_TABLE}
         JOIN
     {STAGING_SONGS_TABLE} 
-        ON {STAGING_SONGS_TABLE}.artist_name = {STAGING_EVENTS_TABLE}].artist
+        ON {STAGING_SONGS_TABLE}.artist_name = {STAGING_EVENTS_TABLE}.artist
 WHERE
     {STAGING_EVENTS_TABLE}.page = 'NextSong'
 """
@@ -174,7 +173,7 @@ WHERE
 USER_TABLE_INSERT: str = f"""
 INSERT INTO {USER_TABLE}
 SELECT 
-    DISTINCT {STAGING_EVENTS_TABLE}.userId AS user_id, # only one entry per user
+    DISTINCT {STAGING_EVENTS_TABLE}.userId AS user_id, 
     {STAGING_EVENTS_TABLE}.firstName AS first_name,
     {STAGING_EVENTS_TABLE}.lastName AS last_name,
     {STAGING_EVENTS_TABLE}.gender,
@@ -203,8 +202,8 @@ SELECT
     {STAGING_SONGS_TABLE}.artist_id, 
     {STAGING_SONGS_TABLE}.artist_name, 
     {STAGING_SONGS_TABLE}.artist_location, 
-    {STAGING_SONGS_TABLE}.artist_latitude, 
-    {STAGING_SONGS_TABLE}.artist_longitude
+    {STAGING_SONGS_TABLE}.artist_latitude::real, 
+    {STAGING_SONGS_TABLE}.artist_longitude::real
 FROM
     {STAGING_SONGS_TABLE};
 """
